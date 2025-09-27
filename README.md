@@ -20,13 +20,6 @@ black holes.
 
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-1. Activate the
-[environment](https://docs.astral.sh/uv/pip/environments/):
-
-    ```sh
-    uv venv
-    ```
-
 1. Install required packages
 
     ```sh
