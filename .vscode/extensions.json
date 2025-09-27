@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "shardulm94.trailing-spaces",
+    "ms-python.python",
+    "ms-python.isort",
+    "ms-python.autopep8",
+    "usernamehw.errorlens",
+    "davidanson.vscode-markdownlint",
+    "yzhang.markdown-all-in-one"
+  ]
+}
