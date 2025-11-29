@@ -1,0 +1,30 @@
+name: Docker Build Check
+on: [push, pull_request]
+jobs:
+  build-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build main Dockerfile
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: gravity-mirage:test
+
+  build-railway:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Railway Dockerfile
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.railway
+          push: false
+          tags: gravity-mirage-railway:test
