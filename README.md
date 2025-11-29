@@ -8,12 +8,66 @@ black holes.
 - [Gravity Mirage](#gravity-mirage)
   - [Table of contents](#table-of-contents)
   - [Running and setting up the project](#running-and-setting-up-the-project)
+    - [Using docker](#using-docker)
+      - [Build the Docker image](#build-the-docker-image)
+      - [Run the container](#run-the-container)
+      - [Custom port mapping](#custom-port-mapping)
+      - [Development mode with volume mounting](#development-mode-with-volume-mounting)
     - [Local development](#local-development)
       - [Setup locally](#setup-locally)
       - [Running the project](#running-the-project)
-    - [Web preview (browser)](#web-preview-browser)
+        - [Available command-line options](#available-command-line-options)
+        - [Web preview (browser)](#web-preview-browser)
+  - [Usage notes](#usage-notes)
+  - [Performance and recommendations](#performance-and-recommendations)
 
 ## Running and setting up the project
+
+### Using docker
+
+The project includes a Dockerfile for containerized deployment. The Docker image uses a multi-stage build with `uv` for efficient dependency management.
+
+> [!NOTE]
+> The Dockerfile exposes port 8080 by default and runs the application
+> as a non-root user for security.
+
+#### Build the Docker image
+
+```sh
+docker build -t gravity-mirage .
+```
+
+#### Run the container
+
+```sh
+docker run -p 8080:8080 gravity-mirage
+```
+
+The web interface will be available at `http://localhost:8080`.
+
+#### Custom port mapping
+
+To run on a different host port (e.g., 3000):
+
+```sh
+docker run -p 3000:8080 gravity-mirage
+```
+
+Then access the application at `http://localhost:3000`.
+
+#### Development mode with volume mounting
+
+To mount the source code for development:
+
+```sh
+docker run -p 8080:8080 -v $(pwd):/app gravity-mirage
+```
+
+> [!IMPORTANT]
+> You may want to add the `reload`
+> [command-line option](#available-command-line-options) to
+> the [Dockerfile](./Dockerfile) to automatically reload the server on
+> code change
 
 ### Local development
 
@@ -27,20 +81,12 @@ black holes.
     uv sync
     ```
 
-    The project's `pyproject.toml` includes the runtime dependencies (numpy, scipy,
-    matplotlib, pygame) and the small web preview dependencies (Flask, Pillow).
-
-    Alternatively, for a lightweight developer environment you can create a
-    virtualenv and install only what you need:
-
-    ```sh
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -U pip
-    pip install Flask Pillow numpy scipy
-    ```
-
 #### Running the project
+
+> [!TIP]
+> You may personalize some of the details about the web server by
+> checking some of the available
+> [command-line options](#available-command-line-options)
 
 Once you have done [the setup step](#setup-locally), you may run the
 project by executing (command-line entrypoint):
@@ -49,7 +95,28 @@ project by executing (command-line entrypoint):
 uv run gravity-mirage
 ```
 
-### Web preview (browser)
+This will start the server on `http://127.0.0.1:2025` by default.
+
+##### Available command-line options
+
+- `--host HOST`: Host address to bind to (default: `0.0.0.0`)
+- `--port PORT`: Port number to run on (default: `2025` or `PORT` environment variable)
+- `--reload`: Enable auto-reload when code changes are detected (useful for development)
+
+**Examples:**
+
+```sh
+# Run on a custom port
+uv run gravity-mirage --port 8000
+
+# Run with auto-reload enabled for development
+uv run gravity-mirage --reload
+
+# Run on all interfaces with custom port
+uv run gravity-mirage --host 0.0.0.0 --port 3000
+```
+
+##### Web preview (browser)
 
 The repository includes a small development web UI for uploading images and
 previewing gravitational lensing. This UI is implemented with FastAPI and the
@@ -62,39 +129,7 @@ methods:
 - Geodesic: slower, more accurate numeric geodesic tracing (coarse radial
   integration, interpolated across the image).
 
-Important requirements
-
-- Python 3.13+ (the project's `pyproject.toml` requires >= 3.13).
-- Use a virtual environment for local development (recommended).
-
-How to run the web preview locally (recommended)
-
-1. Create and activate a virtual environment in the project root:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Install the package (recommended) which will pull runtime dependencies including FastAPI and Uvicorn
-
-```bash
-uv sync
-```
-
-Start the development server with auto-reload (from an activated venv):
-
-```bash
-# if venv is active
-python -m gravity_mirage.web:app
-
-# or explicitly using the venv binary
-.venv/bin/uvicorn gravity_mirage.web:app
-```
-
-In your browser open `http://127.0.0.1:8000` (or the port you chose).
-
-Usage notes
+## Usage notes
 
 - Upload images from the left-hand panel; uploaded files are saved into
   `uploads/` next to the repo root.
@@ -104,7 +139,7 @@ Usage notes
 - The UI requests generated PNG previews from the `/preview/{filename}`
   endpoint; no separate "Render" button is required.
 
-Performance and recommendations
+## Performance and recommendations
 
 - Use Weak-field mode for fast, interactive previews. Use Geodesic mode for
   higher fidelity at greater computational cost.
@@ -113,22 +148,3 @@ Performance and recommendations
 - This preview server is intended for development and testing. For production
   use add appropriate hardening (reverse proxy, auth, rate limiting,
   background workers, etc.).
-
-Troubleshooting
-
-- If `uvicorn` is not found, ensure your virtualenv is activated and that
-  dependencies are installed inside it (`source .venv/bin/activate` and
-  `python -m pip install -e .`).
-- Verify the binary and version:
-
-```bash
-which uvicorn
-uvicorn --version
-python -c "import uvicorn; print(uvicorn.__version__)"
-```
-
-- If imports fail when starting the server, install the missing package into
-  the active venv with `python -m pip install <package>`.
-
-If you want, I can add a small section with a one-line development-startup
-script or a tiny systemd unit for running the preview on a server.

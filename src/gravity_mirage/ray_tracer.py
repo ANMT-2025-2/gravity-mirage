@@ -3,7 +3,9 @@ Ray tracing para visualización de lensing gravitacional
 """
 import numpy as np
 from scipy.integrate import solve_ivp
-from .physics import SchwarzschildBlackHole
+
+from gravity_mirage.physics import SchwarzschildBlackHole
+
 
 class GravitationalRayTracer:
     """

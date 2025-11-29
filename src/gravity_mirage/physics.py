@@ -2,8 +2,7 @@
 Módulo para cálculos físicos del agujero negro
 """
 import numpy as np
-from scipy.integrate import odeint
-from typing import Tuple, Callable
+
 
 class SchwarzschildBlackHole:
     """
@@ -97,6 +96,17 @@ class SchwarzschildBlackHole:
         
         d2phi_dl2 = (-2 * G_ph_rph * dr_dl * dphi_dl
                      - 2 * G_ph_thph * dtheta_dl * dphi_dl)
-        
-        return np.array([dt_dl, dr_dl, dtheta_dl, dphi_dl,
-                        d2t_dl2, d2r_dl2, d2theta_dl2, d2phi_dl2])
+
+        return np.array(
+            [
+                dt_dl,
+                dr_dl,
+                dtheta_dl,
+                dphi_dl,
+                d2t_dl2,
+                d2r_dl2,
+                d2theta_dl2,
+                d2phi_dl2,
+            ]
+        )
+

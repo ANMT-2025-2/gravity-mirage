@@ -1,24 +1,28 @@
 from __future__ import annotations
 
 import io
-import os
-from pathlib import Path
-from typing import List
-
-import numpy as np
+import queue as _queue
 import threading
 import uuid
-import queue as _queue
-import time
-from typing import Dict, Optional, Any
+from os import getenv
+from pathlib import Path
+from typing import Any, Dict, List
+
+import numpy as np
 from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    RedirectResponse,
+    StreamingResponse,
+)
 from jinja2 import DictLoader, Environment, select_autoescape
 from PIL import Image
 
-from .physics import SchwarzschildBlackHole
-from .ray_tracer import GravitationalRayTracer
+from importlib.metadata import version
+from gravity_mirage.physics import SchwarzschildBlackHole
+from gravity_mirage.ray_tracer import GravitationalRayTracer
 
 # Directory used to persist uploaded assets.
 UPLOAD_FOLDER = Path.cwd() / "uploads"
@@ -32,7 +36,10 @@ ALLOWED_METHODS = {"weak", "geodesic"}
 PREVIEW_WIDTH = 512
 CHUNK_SIZE = 1 << 20  # 1 MiB chunks while streaming uploads to disk.
 
-app = FastAPI(title="Gravity Mirage Web")
+app = FastAPI(
+    title="Gravity Mirage Web",
+    version=version("gravity_mirage"),
+)
 
 # Simple in-memory job queue for GIF exports. This is intentionally lightweight
 # and suitable for development. Jobs are stored in `JOBS` and processed by a
@@ -1006,7 +1013,7 @@ async def export_gif_status(job_id: str) -> dict:
 
 
 @app.get('/export_gif_result/{job_id}')
-async def export_gif_result(job_id: str) -> StreamingResponse:
+async def export_gif_result(job_id: str) -> FileResponse:
     job = JOBS.get(job_id)
     if job is None:
         raise HTTPException(status_code=404, detail='Job not found')
@@ -1164,17 +1171,46 @@ async def preview(
     return StreamingResponse(io.BytesIO(png), media_type="image/png")
 
 
-def run(port: int | None = None) -> None:
-    """Entry point used by `python -m gravity_mirage.web`."""
-    env_port = os.getenv("PORT")
-    if env_port:
+def run(
+    *,
+    port: int | None = None,
+    host: str | None = None,
+    reload: bool = False,
+) -> None:
+    """
+    Start the web server for the Gravity Mirage API.
+
+    This function serves as the entry point for running the web application using uvicorn.
+    It handles port and host configuration, with support for environment variable overrides.
+
+    Args:
+        port: The port number to run the server on (keyword-only).
+            Defaults to the PORT provided (if specified), environment variable if set, otherwise 2025.
+        host: The host address to bind the server to (keyword-only).
+            Defaults to '127.0.0.1' if not specified.
+        reload: Enable auto-reload when code changes are detected (keyword-only).
+            Defaults to False.
+
+    Returns:
+        None
+
+    Example:
+        >>> run()  # Runs on 127.0.0.1:2025
+        >>> run(port=8000, host='0.0.0.0')  # Runs on 0.0.0.0:8000
+        >>> run(reload=True)  # Runs with auto-reload enabled
+    """
+    env_port = getenv("PORT")
+    if env_port and not port:
         port = int(env_port)
     if port is None:
         port = 2025
 
+    if not host:
+        host = "127.0.0.1"
+
     import uvicorn
 
-    uvicorn.run("gravity_mirage.web:app", host="127.0.0.1", port=port, reload=False)
+    uvicorn.run("gravity_mirage.web:app", host=host, port=port, reload=reload)
 
 
 if __name__ == "__main__":
