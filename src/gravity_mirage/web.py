@@ -7,7 +7,7 @@ import uuid
 from importlib.metadata import version
 from os import getenv
 from pathlib import Path
-from typing import Annotated, Any, List
+from typing import Annotated, Any
 
 import numpy as np
 from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
@@ -23,8 +23,6 @@ from PIL import Image
 
 from gravity_mirage.physics import SchwarzschildBlackHole
 from gravity_mirage.ray_tracer import GravitationalRayTracer
-
-tmp: List[int] = []
 
 # Directory used to persist uploaded assets.
 UPLOAD_FOLDER = Path.cwd() / "uploads"
