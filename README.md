@@ -27,6 +27,10 @@ black holes.
 
 The project includes a Dockerfile for containerized deployment. The Docker image uses a multi-stage build with `uv` for efficient dependency management.
 
+> [!NOTE]
+> The Dockerfile exposes port 8080 by default and runs the application
+> as a non-root user for security.
+
 #### Build the Docker image
 
 ```sh
@@ -59,8 +63,6 @@ To mount the source code for development:
 docker run -p 8080:8080 -v $(pwd):/app gravity-mirage
 ```
 
-**Note:** The Dockerfile exposes port 8080 by default and runs the application as a non-root user for security.
-
 ### Local development
 
 #### Setup locally
@@ -75,7 +77,7 @@ docker run -p 8080:8080 -v $(pwd):/app gravity-mirage
 
 #### Running the project
 
-> [!NOTE]
+> [!TIP]
 > You may personalize some of the details about the web server by
 > checking some of the available
 > [command-line options](#available-command-line-options)
