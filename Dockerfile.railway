@@ -8,6 +8,7 @@ ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=0
 
 WORKDIR /app
+COPY uv.lock pyproject.toml /app/
 RUN uv sync --locked --no-install-project --no-dev
 COPY . /app
 RUN uv sync --locked --no-dev
