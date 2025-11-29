@@ -20,6 +20,7 @@ from fastapi.responses import (
 from jinja2 import DictLoader, Environment, select_autoescape
 from PIL import Image
 
+from importlib.metadata import version
 from gravity_mirage.physics import SchwarzschildBlackHole
 from gravity_mirage.ray_tracer import GravitationalRayTracer
 
@@ -35,7 +36,10 @@ ALLOWED_METHODS = {"weak", "geodesic"}
 PREVIEW_WIDTH = 512
 CHUNK_SIZE = 1 << 20  # 1 MiB chunks while streaming uploads to disk.
 
-app = FastAPI(title="Gravity Mirage Web")
+app = FastAPI(
+    title="Gravity Mirage Web",
+    version=version("gravity_mirage"),
+)
 
 # Simple in-memory job queue for GIF exports. This is intentionally lightweight
 # and suitable for development. Jobs are stored in `JOBS` and processed by a

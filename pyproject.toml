@@ -1,6 +1,6 @@
 [project]
 name = "gravity-mirage"
-version = "0.0.0"
+version = "1.0.0"
 description = "Simulator that visually demostrates gravitational lensing caused by black holes"
 readme = "README.md"
 authors = [
