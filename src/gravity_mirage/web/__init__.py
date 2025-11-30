@@ -23,9 +23,16 @@ from PIL import Image
 
 from gravity_mirage.physics import SchwarzschildBlackHole
 from gravity_mirage.ray_tracer import GravitationalRayTracer
-from gravity_mirage.utils.files import resolve_export_file, resolve_uploaded_file
+from gravity_mirage.utils.files import (
+    allocate_export_path,
+    allocate_image_path,
+    list_exported_images,
+    list_uploaded_images,
+    resolve_export_file,
+    resolve_uploaded_file,
+    sanitize_extension,
+)
 from gravity_mirage.web.constants import (
-    ALLOWED_EXTENSIONS,
     ALLOWED_METHODS,
     CHUNK_SIZE,
     EXPORT_FOLDER,
@@ -661,48 +668,6 @@ template_env = Environment(
     autoescape=select_autoescape(["html", "xml"]),
 )
 index_template = template_env.get_template("index.html")
-
-
-def list_uploaded_images() -> list[str]:
-    """Return the filenames that currently exist in the upload directory."""
-    return sorted([f.name for f in UPLOAD_FOLDER.iterdir() if f.is_file()])
-
-
-def list_exported_images() -> list[str]:
-    """Return the filenames that currently exist in the exports directory."""
-    return sorted([f.name for f in EXPORT_FOLDER.iterdir() if f.is_file()])
-
-
-def sanitize_extension(extension: str | None) -> str:
-    """Normalize and validate the user-provided extension."""
-    if not extension:
-        return ".png"
-    extension = extension.lower()
-    if extension not in ALLOWED_EXTENSIONS:
-        return ".png"
-    return extension
-
-
-def allocate_image_path(extension: str) -> Path:
-    """Pick the next sequential image<N> filename."""
-    max_index = 0
-    for existing in UPLOAD_FOLDER.iterdir():
-        if existing.is_file() and existing.stem.startswith("image"):
-            suffix = existing.stem[5:]
-            if suffix.isdigit():
-                max_index = max(max_index, int(suffix))
-    return UPLOAD_FOLDER / f"image{max_index + 1}{extension}"
-
-
-def allocate_export_path(extension: str = ".gif") -> Path:
-    """Pick the next sequential image<N> filename for the exports folder."""
-    max_index = 0
-    for existing in EXPORT_FOLDER.iterdir():
-        if existing.is_file() and existing.stem.startswith("image"):
-            suffix = existing.stem[5:]
-            if suffix.isdigit():
-                max_index = max(max_index, int(suffix))
-    return EXPORT_FOLDER / f"image{max_index + 1}{extension}"
 
 
 def render_lensing_image(
