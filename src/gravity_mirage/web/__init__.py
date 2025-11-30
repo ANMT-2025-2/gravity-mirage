@@ -20,10 +20,7 @@ from fastapi.responses import (
 from jinja2 import DictLoader, Environment, select_autoescape
 from PIL import Image
 
-from gravity_mirage.core.lensing import (
-    compute_lensed_array_from_src_arr,
-    render_lensing_image,
-)
+from gravity_mirage.core.lensing import compute_lensed_array_from_src_arr
 from gravity_mirage.utils.files import (
     allocate_image_path,
     list_exported_images,
@@ -40,6 +37,7 @@ from gravity_mirage.web.constants import (
     PREVIEW_WIDTH,
     UPLOAD_FOLDER,
 )
+from gravity_mirage.web.routers import api_router
 from gravity_mirage.web.workers import JOB_QUEUE, JOBS
 from gravity_mirage.web.workers.gif import worker as worker_gif
 
@@ -308,37 +306,9 @@ async def delete_export(filename: Annotated[str, Form()]) -> RedirectResponse:
     path.unlink(missing_ok=True)
     return RedirectResponse("/", status_code=303)
 
-
-@app.get("/preview/{filename}", response_class=StreamingResponse)
-async def preview(
-    filename: str,
-    mass: Annotated[float, Query(gt=0.0)] = 10.0,
-    scale: Annotated[float, Query(gt=0.0)] = 100.0,
-    width: Annotated[int, Query(gt=0)] = PREVIEW_WIDTH,
-    method: Annotated[str, Query()] = "weak",
-) -> StreamingResponse:
-    """Generate and stream a PNG preview for the requested file."""
-    clean_method = method.lower()
-    if clean_method not in ALLOWED_METHODS:
-        raise HTTPException(status_code=400, detail="Unsupported render method")
-
-    render_width = int(max(64, min(width, 2048)))
-    path = resolve_uploaded_file(filename)
-
-    try:
-        png = await run_in_threadpool(
-            render_lensing_image,
-            path,
-            float(mass),
-            float(scale),
-            render_width,
-            clean_method,
-        )
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Image not found") from exc
-
-    return StreamingResponse(io.BytesIO(png), media_type="image/png")
-
+app.include_router(
+    api_router,
+)
 
 def run(
     *,
