@@ -25,7 +25,6 @@ from gravity_mirage.utils.files import (
     allocate_image_path,
     list_exported_images,
     list_uploaded_images,
-    resolve_export_file,
     resolve_uploaded_file,
     sanitize_extension,
 )
@@ -285,26 +284,6 @@ async def export_file(filename: str) -> FileResponse:
     return FileResponse(target, media_type="image/gif")
 
 
-@app.post("/delete")
-async def delete(filename: Annotated[str, Form()]) -> RedirectResponse:
-    """Remove an uploaded asset."""
-    try:
-        path = resolve_uploaded_file(filename)
-    except HTTPException:
-        return RedirectResponse("/", status_code=303)
-    path.unlink(missing_ok=True)
-    return RedirectResponse("/", status_code=303)
-
-
-@app.post("/delete_export")
-async def delete_export(filename: Annotated[str, Form()]) -> RedirectResponse:
-    """Remove an exported GIF."""
-    try:
-        path = resolve_export_file(filename)
-    except HTTPException:
-        return RedirectResponse("/", status_code=303)
-    path.unlink(missing_ok=True)
-    return RedirectResponse("/", status_code=303)
 
 app.include_router(
     api_router,

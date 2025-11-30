@@ -266,7 +266,7 @@ INDEX_TEMPLATE = """
                     <ul>
                         {% for image in images %}
                         <li>
-                            <form method="post" action="/delete" onsubmit="return confirm('Delete {{ image }}?');">
+                            <form method="post" action="/delete/upload" onsubmit="return confirm('Delete {{ image }}?');">
                                 <input type="hidden" name="filename" value="{{ image }}" />
                                 <button type="submit" aria-label="Delete {{ image }}">✖</button>
                             </form>
@@ -293,7 +293,7 @@ INDEX_TEMPLATE = """
                         {% for image in exports %}
                         <li>
                             <a class="download-btn" href="/exports/{{ image }}" download aria-label="Download {{ image }}" style="position:absolute; top:8px; left:8px; width:24px; height:24px; border-radius:50%; background:#0b4dd8; color:white; display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">↓</a>
-                            <form method="post" action="/delete_export" onsubmit="return confirm('Delete export {{ image }}?');">
+                            <form method="post" action="/delete/export" onsubmit="return confirm('Delete export {{ image }}?');">
                                 <input type="hidden" name="filename" value="{{ image }}" />
                                 <button type="submit" aria-label="Delete {{ image }}">✖</button>
                             </form>
@@ -489,7 +489,7 @@ INDEX_TEMPLATE = """
                         const items = list.map(name => `
                             <li>
                                 <a class="download-btn" href="/exports/${name}" download aria-label="Download ${name}" style="position:absolute; top:8px; left:8px; width:24px; height:24px; border-radius:50%; background:#0b4dd8; color:white; display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">↓</a>
-                                <form method="post" action="/delete_export" onsubmit="return confirm('Delete export ${name}?');">
+                                <form method="post" action="/delete/export" onsubmit="return confirm('Delete export ${name}?');">
                                     <input type="hidden" name="filename" value="${name}" />
                                     <button type="submit" aria-label="Delete ${name}">✖</button>
                                 </form>
