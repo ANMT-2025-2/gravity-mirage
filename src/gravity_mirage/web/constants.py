@@ -16,7 +16,7 @@ EXPORT_FOLDER.mkdir(
     exist_ok=True,
 )
 
-ALLOWED_EXTENSIONS = {
+ALLOWED_EXTENSIONS = (
     ".png",
     ".jpg",
     ".jpeg",
@@ -24,11 +24,13 @@ ALLOWED_EXTENSIONS = {
     ".gif",
     ".tiff",
     ".webp",
-}
-ALLOWED_METHODS = {
+)
+
+ALLOWED_METHODS = (
     "weak",
     "geodesic",
-}
+)
+
 PREVIEW_WIDTH = 512
 CHUNK_SIZE = 1 << 20  # 1 MiB chunks while streaming uploads to disk.
 
