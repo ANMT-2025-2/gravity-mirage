@@ -6,6 +6,7 @@ from os import getenv
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse
 from jinja2 import DictLoader, Environment, select_autoescape
 
@@ -18,6 +19,9 @@ app = FastAPI(
     title="Gravity Mirage Web",
     version=version("gravity_mirage"),
 )
+
+# Add middleware to compress responses larger than 500 bytes
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # Start worker thread
 _worker_thread = threading.Thread(target=worker_gif, daemon=True)
