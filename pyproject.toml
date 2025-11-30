@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Harrison Pinto", email = "hpintom@unal.edu.co" },
     { name = "Camilo Contreras", email = "ccontrerasc@unal.edu.co" },
-    { name = "Juan Rodriguez", email = "juarodriguezgo@unal.edu.co" }
+    { name = "Juan Rodriguez", email = "juarodriguezgo@unal.edu.co" },
 ]
 requires-python = ">=3.13"
 dependencies = [
@@ -30,6 +30,7 @@ build-backend = "uv_build"
 
 [tool.ruff.lint]
 extend-select = [
-    "UP",  # pyupgrade
-    "FAST",  # FastAPI - FastAPI-specific linting rules
+    "UP",   # pyupgrade
+    "FAST", # FastAPI - FastAPI-specific linting rules
+    "S",    # Flake8-bandit - security issues
 ]
