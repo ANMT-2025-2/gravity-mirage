@@ -19,7 +19,7 @@ class GravitationalRayTracer:
         max_distance: float = 1000,
     ) -> np.ndarray:
         """
-        Traza un fotón usando aproximación de campo débil (más rápido)
+        Traza un fotón usando aproximación de campo débil (más rápido).
 
         Args:
             initial_pos: Posición inicial [x, y] (en unidades de Rs)
@@ -28,6 +28,7 @@ class GravitationalRayTracer:
 
         Returns:
             Array de posiciones [N, 2]
+
         """
         pos = np.array(initial_pos, dtype=float)
         direction = np.array(initial_dir, dtype=float)
@@ -83,6 +84,7 @@ class GravitationalRayTracer:
 
         Returns:
             Solución de las ecuaciones geodésicas
+
         """
         r0, theta0, phi0 = initial_pos_spherical
         dr0, dtheta0, dphi0 = initial_velocity
@@ -109,7 +111,7 @@ class GravitationalRayTracer:
         # triggering at t=0
         threshold = r0 * 0.999
 
-        def escape_event(lam, s):
+        def escape_event(_lam, s):
             # s is the state vector: [t, r, theta, phi, dt/dλ, dr/dλ, dθ/dλ, dφ/dλ]
             return s[1] - threshold
 

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class SchwarzschildBlackHole:
-    """Representa un agujero negro de Schwarzschild (no rotante)"""
+    """Representa un agujero negro de Schwarzschild (no rotante)."""
 
     def __init__(self, mass: float):
         """
@@ -38,7 +38,7 @@ class SchwarzschildBlackHole:
         # Fórmula de Einstein: α ≈ 4GM/(c²b)
         return 4 * self.G * self.mass / (self.c**2 * impact_parameter)
 
-    def geodesic_equations(self, state: np.ndarray, affine_param: float) -> np.ndarray:
+    def geodesic_equations(self, state: np.ndarray, _affine_param: float) -> np.ndarray:
         """
         Ecuaciones geodésicas para fotones en métrica de Schwarzschild
         en coordenadas (t, r, θ, φ) y sus derivadas.
@@ -65,38 +65,38 @@ class SchwarzschildBlackHole:
 
         # Símbolos de Christoffel (solo los no-nulos necesarios)
         # Γ^t_tr
-        G_t_tr = rs / (2 * r * (r - rs))
+        g_t_tr = rs / (2 * r * (r - rs))
         # Γ^r_tt
-        G_r_tt = rs * f / (2 * r**2)
+        g_r_tt = rs * f / (2 * r**2)
         # Γ^r_rr
-        G_r_rr = -rs / (2 * r * (r - rs))
+        g_r_rr = -rs / (2 * r * (r - rs))
         # Γ^r_θθ
-        G_r_thth = -(r - rs)
+        g_r_thth = -(r - rs)
         # Γ^r_φφ
-        G_r_phph = -(r - rs) * np.sin(theta) ** 2
+        g_r_phph = -(r - rs) * np.sin(theta) ** 2
         # Γ^θ_rθ
-        G_th_rth = 1 / r
+        g_th_rth = 1 / r
         # Γ^θ_φφ
-        G_th_phph = -np.sin(theta) * np.cos(theta)
+        g_th_phph = -np.sin(theta) * np.cos(theta)
         # Γ^φ_rφ
-        G_ph_rph = 1 / r
+        g_ph_rph = 1 / r
         # Γ^φ_θφ
-        G_ph_thph = np.cos(theta) / np.sin(theta)
+        g_ph_thph = np.cos(theta) / np.sin(theta)
 
         # Ecuaciones geodésicas: d²x^μ/dλ² = -Γ^μ_αβ (dx^α/dλ)(dx^β/dλ)
-        d2t_dl2 = -2 * G_t_tr * dt_dl * dr_dl
+        d2t_dl2 = -2 * g_t_tr * dt_dl * dr_dl
 
         d2r_dl2 = (
-            -G_r_tt * dt_dl**2
-            - G_r_rr * dr_dl**2
-            - G_r_thth * dtheta_dl**2
-            - G_r_phph * dphi_dl**2
+            -g_r_tt * dt_dl**2
+            - g_r_rr * dr_dl**2
+            - g_r_thth * dtheta_dl**2
+            - g_r_phph * dphi_dl**2
         )
 
-        d2theta_dl2 = -2 * G_th_rth * dr_dl * dtheta_dl - G_th_phph * dphi_dl**2
+        d2theta_dl2 = -2 * g_th_rth * dr_dl * dtheta_dl - g_th_phph * dphi_dl**2
 
         d2phi_dl2 = (
-            -2 * G_ph_rph * dr_dl * dphi_dl - 2 * G_ph_thph * dtheta_dl * dphi_dl
+            -2 * g_ph_rph * dr_dl * dphi_dl - 2 * g_ph_thph * dtheta_dl * dphi_dl
         )
 
         return np.array(
