@@ -23,7 +23,8 @@ def resolve_uploaded_file(filename: str) -> Path:
         ) from exc
     if not target.exists():
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
         )
     return target
 
