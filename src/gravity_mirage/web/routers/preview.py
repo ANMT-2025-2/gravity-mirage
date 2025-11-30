@@ -1,7 +1,7 @@
 import io
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import StreamingResponse
 
@@ -25,7 +25,10 @@ async def preview(
     """Generate and stream a PNG preview for the requested file."""
     clean_method = method.lower()
     if clean_method not in ALLOWED_METHODS:
-        raise HTTPException(status_code=400, detail="Unsupported render method")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported render method",
+        )
 
     render_width = int(max(64, min(width, 2048)))
     path = resolve_uploaded_file(filename)
@@ -40,7 +43,10 @@ async def preview(
             clean_method,
         )
     except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Image not found") from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found",
+        ) from exc
 
     return StreamingResponse(io.BytesIO(png), media_type="image/png")
 

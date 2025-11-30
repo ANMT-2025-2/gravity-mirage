@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Annotated
 
 import numpy as np
-from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import (
     FileResponse,
@@ -75,7 +75,10 @@ async def export_gif(
     """
     clean_method = method.lower()
     if clean_method not in ALLOWED_METHODS:
-        raise HTTPException(status_code=400, detail="Unsupported render method")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported render method",
+        )
 
     path = resolve_uploaded_file(filename)
 
@@ -120,7 +123,10 @@ async def export_gif(
     try:
         gif_bytes = await run_in_threadpool(_build_gif_bytes)
     except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Image not found") from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found",
+        ) from exc
 
     headers = {
         "Content-Disposition": f'attachment; filename="{Path(filename).stem}-scroll.gif"',
@@ -144,7 +150,10 @@ async def export_gif_async(
     """Queue a GIF export job and return a job id for polling."""
     clean_method = method.lower()
     if clean_method not in ALLOWED_METHODS:
-        raise HTTPException(status_code=400, detail="Unsupported render method")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported render method",
+        )
 
     path = resolve_uploaded_file(filename)
 
@@ -168,7 +177,10 @@ async def export_gif_async(
 async def export_gif_status(job_id: str) -> dict:
     job = JOBS.get(job_id)
     if job is None:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
     return {
         "job_id": job_id,
         "status": job.get("status", "unknown"),
@@ -181,12 +193,21 @@ async def export_gif_status(job_id: str) -> dict:
 async def export_gif_result(job_id: str) -> FileResponse:
     job = JOBS.get(job_id)
     if job is None:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
     if job.get("status") != "done":
-        raise HTTPException(status_code=409, detail="Job not ready")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Job not ready",
+        )
     result_name = job.get("result")
     if not result_name:
-        raise HTTPException(status_code=500, detail="Result missing")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Result missing",
+        )
     result_path = EXPORT_FOLDER / result_name
     return FileResponse(result_path, media_type="image/gif", filename=result_name)
 
@@ -227,7 +248,10 @@ async def index() -> HTMLResponse:
 async def upload(file: Annotated[UploadFile, File()]) -> RedirectResponse:
     """Persist an uploaded file and redirect back to the UI."""
     if file is None or not file.filename:
-        return RedirectResponse("/", status_code=303)
+        return RedirectResponse(
+            "/",
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
 
     ext = sanitize_extension(Path(file.filename).suffix)
     dest = allocate_image_path(ext)
@@ -239,7 +263,10 @@ async def upload(file: Annotated[UploadFile, File()]) -> RedirectResponse:
                 break
             buffer.write(chunk)
     await file.close()
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse(
+        "/",
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
 
 @app.get("/uploads/{filename:path}")
@@ -263,9 +290,15 @@ async def img_file(filename: str) -> FileResponse:
     try:
         target.relative_to(img_base)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail="File not found") from e
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        ) from e
     if not target.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        )
     return FileResponse(target)
 
 
@@ -278,11 +311,16 @@ async def export_file(filename: str) -> FileResponse:
     try:
         target.relative_to(export_base)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail="File not found") from e
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        ) from e
     if not target.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        )
     return FileResponse(target, media_type="image/gif")
-
 
 
 app.include_router(

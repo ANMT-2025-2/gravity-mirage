@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 from gravity_mirage.web.constants import (
     ALLOWED_EXTENSIONS,
@@ -17,9 +17,14 @@ def resolve_uploaded_file(filename: str) -> Path:
     try:
         target.relative_to(base)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail="File not found") from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        ) from exc
     if not target.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
     return target
 
 
@@ -31,9 +36,15 @@ def resolve_export_file(filename: str) -> Path:
     try:
         target.relative_to(base)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail="File not found") from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        ) from exc
     if not target.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        )
     return target
 
 
