@@ -68,7 +68,7 @@ def worker() -> None:
             frames_list: list[Image.Image] = []
             for i in range(frames):
                 # update a coarse progress indicator
-                JOBS[job_id]["progress"] = (i // frames) * 100
+                JOBS[job_id]["progress"] = int((i / frames) * 100)
                 shift = round(i * (out_w / frames))
                 rolled = np.roll(src_arr0, -shift, axis=1)
                 result_arr = compute_lensed_array_from_src_arr(
