@@ -1,7 +1,7 @@
 """Gravity Mirage: Simulador de lensing gravitacional."""
 
-from gravity_mirage.physics import SchwarzschildBlackHole
-from gravity_mirage.ray_tracer import GravitationalRayTracer
+from gravity_mirage.core.physics import SchwarzschildBlackHole
+from gravity_mirage.core.ray_tracer import GravitationalRayTracer
 from gravity_mirage.web import app as web_app
 from gravity_mirage.web import run as start_api
 
