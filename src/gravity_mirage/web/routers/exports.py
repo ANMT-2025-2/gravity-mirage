@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/exports/gif/{filename}")
+@router.get("/gif/{filename}")
 async def export_gif(
     filename: str,
     mass: Annotated[float, Query(gt=0.0)] = 10.0,
@@ -101,7 +101,7 @@ async def export_gif(
     )
 
 
-@router.post("/exports/gif/async/{filename}")
+@router.post("/gif/async/{filename}")
 async def export_gif_async(
     filename: str,
     mass: Annotated[float, Query(gt=0.0)] = 10.0,
@@ -136,7 +136,7 @@ async def export_gif_async(
     return {"job_id": job_id, "status": "queued"}
 
 
-@router.get("/exports/gif/status/{job_id}")
+@router.get("/gif/status/{job_id}")
 async def export_gif_status(job_id: str) -> dict:
     job = JOBS.get(job_id)
     if job is None:
@@ -152,7 +152,7 @@ async def export_gif_status(job_id: str) -> dict:
     }
 
 
-@router.get("/exports/gif/result/{job_id}")
+@router.get("/gif/result/{job_id}")
 async def export_gif_result(job_id: str) -> FileResponse:
     job = JOBS.get(job_id)
     if job is None:
@@ -175,13 +175,13 @@ async def export_gif_result(job_id: str) -> FileResponse:
     return FileResponse(result_path, media_type="image/gif", filename=result_name)
 
 
-@router.get("/exports/list")
+@router.get("/list")
 async def exports_list() -> dict:
     """Return a JSON listing of files in the exports folder."""
     return {"exports": list_exported_images()}
 
 
-@router.get("/exports/{filename:path}")
+@router.get("/{filename:path}")
 async def export_file(filename: str) -> FileResponse:
     """Serve files from the repository's `exports/` directory (generated GIFs)."""
     # Ensure we don't allow path traversal outside the exports directory.
