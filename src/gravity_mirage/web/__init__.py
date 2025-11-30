@@ -73,10 +73,10 @@ def _gif_worker() -> None:
                 src_arr0 = np.array(src_small)
 
             frames = int(job.get("frames", 24))
-            frames_list = []
+            frames_list: list[Image.Image] = []
             for i in range(frames):
                 # update a coarse progress indicator
-                JOBS[job_id]["progress"] = int((i / frames) * 100)
+                JOBS[job_id]["progress"] = (i // frames) * 100
                 shift = round(i * (out_w / frames))
                 rolled = np.roll(src_arr0, -shift, axis=1)
                 result_arr = _compute_lensed_array_from_src_arr(
