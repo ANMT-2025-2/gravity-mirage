@@ -300,14 +300,9 @@
                         </select>
                     </div>
                     <div>
-                        <label for="massSlider">Mass (M☉)</label>
-                        <input id="massSlider" type="range" min="1" max="1000000" step="1" value="10" />
-                        <div class="value value-left" id="massValue">10</div>
-                    </div>
-                    <div>
                         <label for="scaleSlider">Scale (Rs across radius)</label>
-                        <input id="scaleSlider" type="range" min="1" max="20" step="1" value="5" />
-                        <div class="value value-left" id="scaleValue">5</div>
+                        <input id="scaleSlider" type="range" min="2" max="20" step="1" value="5" />
+                        <div class="value value-left" id="scaleValue">1/5</div>
                     </div>
                     <div style="display:flex; gap:10px; width:100%; justify-content:left; align-items:center;">
                         <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
@@ -400,7 +395,15 @@
                     imageSelect.addEventListener('change', updateExportButton);
                 }
                 wireSlider(massSlider, massValue);
-                wireSlider(scaleSlider, scaleValue);
+                // The scale control should display as a fraction "1/<value>".
+                if(scaleSlider && scaleValue){
+                    const syncScale = () => { scaleValue.textContent = '1/' + scaleSlider.value; };
+                    syncScale();
+                    scaleSlider.addEventListener('input', () => {
+                        syncScale();
+                        scheduleRender();
+                    });
+                }
 
                 if(methodSelect){
                     methodSelect.addEventListener('change', () => {

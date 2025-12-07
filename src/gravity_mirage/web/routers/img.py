@@ -13,7 +13,7 @@ async def img_file(filename: str) -> FileResponse:
     """
     Serve files from the repository's ./img/ directory (for repo assets).
 
-    This lets the template reference `/img/nasa-black-hole-visualization.gif`
+    This lets the template reference `/img/milky-way.gif`
     without requiring the user to re-upload the asset into uploads/.
     """
     # Ensure we don't allow path traversal outside the img directory.

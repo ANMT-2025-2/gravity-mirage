@@ -46,11 +46,11 @@ async def index() -> HTMLResponse:
     # Prefer a gif placed in ./img/ (repo asset) for the full-page background;
     # fall back to an uploaded copy in the uploads/ folder if present.
     img_dir = Path.cwd() / "img"
-    img_file = img_dir / "nasa-black-hole-visualization.gif"
+    img_file = img_dir / "milky-way.gif"
     if img_file.exists():
         background_image_url = f"/api/img/{img_file.name}"
     else:
-        bg_file = UPLOAD_FOLDER / "nasa-black-hole-visualization.gif"
+        bg_file = UPLOAD_FOLDER / "milky-way.gif"
         background_image_url = f"/api/uploads/{bg_file.name}" if bg_file.exists() else ""
 
     html = index_template.render(
